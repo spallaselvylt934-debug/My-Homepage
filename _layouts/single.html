@@ -37,7 +37,15 @@ layout: default
         {% if page.collection == 'teaching' %}
           <p> {{ page.type }}, <i>{{ page.venue }}</i>, {{ page.date | default: "1900-01-01" | date: "%Y" }} </p>
         {% elsif page.venue and page.date %}
+          {% if page.publication_status %}
+          <p>
+            {% case page.publication_status %}
+              {% when 'accepted' %}Accepted at{% when 'published' %}Published in{% else %}{{ page.publication_status }}{% endcase %}
+            <i>{{ page.venue }}</i>{% if page.presentation_type == 'oral' %} (Oral){% endif %}, {{ page.date | default: "1900-01-01" | date: "%Y" }}
+          </p>
+          {% else %}
           <p>Published in <i>{{ page.venue }}</i>, {{ page.date | default: "1900-01-01" | date: "%Y" }} </p>
+          {% endif %}
         {% elsif page.date %}
           <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Published:" }}</strong> <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | default: "1900-01-01" | date: "%B %d, %Y" }}</time></p>
         {% endif %}    
@@ -48,6 +56,10 @@ layout: default
         {{ content }}
 
         {%- assign has_any_link = page.paperurl or page.slidesurl or page.bibtexurl or page.codeurl -%}
+
+        {%- if page.code_status -%}
+          <p><strong>Code status:</strong> {% if page.code_status == 'released' %}Open-source{% elsif page.code_status == 'not_released' %}No released repository found on GitHub{% else %}{{ page.code_status }}{% endif %}</p>
+        {%- endif -%}
 
         {%- if page.citation -%}
           <p style="font-size: smaller">
